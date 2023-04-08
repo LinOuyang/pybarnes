@@ -44,10 +44,9 @@ plt.colorbar(plt.contourf(z2, levels=np.arange(560, 590), extend="both", cmap=pl
 plt.subplot(133)
 plt.title("Mesoscale fluctuations field")
 plt.colorbar(plt.contourf(z3, cmap=plt.cm.bwr, norm=TwoSlopeNorm(0)))
-plt.savefig("./barnes_filter.jpg", dpi=300)
 plt.show()
 ```
-<img src="./readme_images/barnes_filter.jpg" width = "480" />
+<img src="./readme_images/barnes_filter.jpg"/>
 
 
 
