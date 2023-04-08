@@ -3,8 +3,7 @@
 Barnes is a commonly used spatial filtering method that mainly uses two constants g and c to calculate Gaussian weights, and performs spatial interpolation for each grid point, thus becoming a low-pass filter that filters out high-frequency fluctuations. When using two different schemes of constant g and c schemes, both retain low-frequency fluctuations of different scales. The difference between the filtering results of the two methods can result in mesoscale fluctuations.
 
 Reference:
-
-    DOI :<a href="https://doi.org/10.1175/1520-0493(1980)108<1108:AOTFSM>2.0.CO;2">https://doi.org/10.1175/1520-0493(1980)108<1108:AOTFSM>2.0.CO;2</a>
+《<a href="https://doi.org/10.1175/1520-0493(1980)108%3C1108:AOTFSM%3E2.0.CO;2">An Objective Technique for Separating Macroscale and Mesoscale Features in Meteorological Data</a>》
    
 
 ## Installation
