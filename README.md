@@ -5,7 +5,7 @@ Barnes is a commonly used spatial filtering method that mainly uses two constant
 ## Installation
 After installing metpy, use pip to install:
 ```
-pip install oyl
+pip install pybarnes
 ```
 
 ## Get started
