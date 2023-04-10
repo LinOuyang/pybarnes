@@ -1,3 +1,4 @@
+from warnings import warn
 import xarray as xr
 import numpy as np
 from metpy.calc import lat_lon_grid_deltas
@@ -81,11 +82,11 @@ class BarnesFilter:
         self.radius_degree = radius_degree
         if isinstance(data_arr, xr.Dataset):
             self.data_vars = list(data_arr.data_vars)
-            self.dims = data_arr[data_vars[0]].dims
-            seslf.coords = data_arr.coords
+            self.dims = data_arr[self.data_vars[0]].dims
+            self.coords = data_arr.coords
             lat_var, lon_var = self.dims[-2:]
             lon, lat = data_arr[lon_var].data, data_arr[lat_var].data
-            self.data = np.stack([data_arr[v] for v in data_vars], axis=0)
+            self.data = np.stack([data_arr[v] for v in self.data_vars], axis=0)
         elif isinstance(data_arr, xr.DataArray):
             self.dims = data_arr.dims
             self.coords = data_arr.coords
@@ -94,14 +95,19 @@ class BarnesFilter:
             self.data = data_arr.data[None]
             self.data_vars = [data_arr.name]
         else:
+            if lat is None:
+                raise KeyError("The longitude and latitude of the data are missing.")
             self.data = data_arr.copy()
         self.kilometer_distance2 = self.__calculate_distance(lon, lat)
 
     def __convert_data(self, data):
         if hasattr(self, "dims"):
+            nv = data.shape[0]
             ds = []
-            for i in range(data.shape[0]):
+            for i in range(nv):
                 da = xr.DataArray(data[i], coords=self.coords, dims=self.dims, name=self.data_vars[i])
+                if nv < 2:
+                    return da
                 ds.append(da)
             return xr.merge(ds)
         else:
@@ -121,18 +127,24 @@ class BarnesFilter:
         dx, dy = lat_lon_grid_deltas(lon, lat)
         x = np.array(np.concatenate([np.zeros(ny,)[:, None], np.cumsum(dx, 1)], 1))/1000
         y = np.array(np.concatenate([np.zeros(nx,)[None], np.cumsum(dy, 0)], 0))/1000
+        del dx, dy
 
         gridx = field_grids(x, self.grids) 
         gridy = field_grids(y, self.grids)
 
         dX = x[:, :, None, None] - gridx
         dY = y[:, :, None, None] - gridy
+        del x, y, gridx, gridy
 
         kilometer_distance2 = dX ** 2 + dY ** 2
         return kilometer_distance2
 
     def __lowpass(self, g=0.3, c=150000):
         data = field_grids(self.data, self.grids)
+        sum_func = np.sum
+        if np.isnan(self.data).any():
+            warn("The input data contains NANs which may result in unexpected result")
+            sum_func = np.nansum
         weights1 = np.exp(-self.kilometer_distance2/(4*c))
         sum_weights1 = np.sum(weights1, (-1, -2), keepdims=True)
         normed_weights1 = weights1/sum_weights1
@@ -141,9 +153,9 @@ class BarnesFilter:
         sum_weights2 = np.sum(weights2, (-1, -2), keepdims=True)
         normed_weights2 = weights2/sum_weights2
         del weights2, sum_weights2
-        revision1 = np.sum(data * normed_weights1, (-1, -2))
+        revision1 = sum_func(data * normed_weights1, (-1, -2))
         diff = field_grids(self.data - revision1, self.grids)
-        weighted_diff = np.sum(diff * normed_weights2, (-1, -2))
+        weighted_diff = sum_func(diff * normed_weights2, (-1, -2))
         revision2 = revision1 + weighted_diff
         return revision2
 
@@ -197,4 +209,5 @@ class BarnesFilter:
         lowpass1 = self.__lowpass(g1, c1)
         lowpass2 = self.__lowpass(g2, c2)
         return self.__convert_data(lowpass1 - lowpass2)
+
 
