@@ -1,3 +1,3 @@
 from .barnes_filter import BarnesFilter
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
