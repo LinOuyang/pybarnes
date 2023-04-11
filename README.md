@@ -24,7 +24,7 @@ from pybarnes import BarnesFilter
 ds = xr.open_dataset("./era5uvz500.nc").sortby("latitude")
 ds = ds.sel(longitude=slice(70, 140), latitude=slice(0, 60))
 ds = ds.isel(longitude=slice(None, None, 2), latitude=slice(None, None, 2))
-z1 = ds.z[0]/98
+z1 = ds/98
 ```
 
 ### Barnes fileter
