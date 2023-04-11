@@ -24,16 +24,14 @@ from pybarnes import BarnesFilter
 ds = xr.open_dataset("./era5uvz500.nc").sortby("latitude")
 ds = ds.sel(longitude=slice(70, 140), latitude=slice(0, 60))
 ds = ds.isel(longitude=slice(None, None, 2), latitude=slice(None, None, 2))
-z1 = ds/98
+z1 = ds.z[0]/98
 ```
 
 ### Barnes fileter
 ```python
 f = BarnesFilter(z1)
-ds = f.lowpass(g=0.3, c=150000)
-z2 = ds.z
-ds = f.bandpass(g1=0.3, c1=30000, g2=0.3, c2=150000)
-z3 = ds.z
+z2 = f.lowpass(g=0.3, c=150000)
+z3 = f.bandpass(g1=0.3, c1=30000, g2=0.3, c2=150000)
 ```
 
 ### Show the data
