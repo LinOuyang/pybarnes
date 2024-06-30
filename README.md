@@ -19,7 +19,7 @@ import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
 from matplotlib.colors import TwoSlopeNorm
-from pybarnes import BarnesFilter
+from pybarnes import BarnesFilter, BarnesFilter2d, BarnesFilter1d
 
 ds = xr.open_dataset("./era5uvz500.nc").sortby("latitude")
 ds = ds.sel(longitude=slice(70, 140), latitude=slice(0, 60))
@@ -28,6 +28,8 @@ z1 = ds.z[0]/98
 ```
 
 ### Barnes fileter
+#### For the regular xarray dataarray
+In this case, the input should be a xarray dataarray which has a 1-d longitude and latitude dimension.
 ```python
 f = BarnesFilter(z1)
 z2 = f.lowpass(g=0.3, c=150000)
@@ -51,6 +53,20 @@ plt.show()
 <img src="./readme_images/barnes_filter.jpg"/>
 
 
+#### For the normal numpy data
+In this case, the input should be a numpy array, and the lon-lat dimensions must be specified.
+```python
+f = BarnesFilter(array1, lon=lon, lat=lat)
+z2 = f.lowpass(g=0.3, c=150000)
+z3 = f.bandpass(g1=0.3, c1=30000, g2=0.3, c2=150000)
+```
+For the wrfout data, it is also the same as the numpy data. The lon-lat dimension must be specified.
+```python
+slp = getwar(ncfile, "slp")
+f = BarnesFilter(slp.data, lon=slp.XLONG.data, lat=slp.XLAT.data)
+z2 = f.lowpass(g=0.3, c=150000)
+z3 = f.bandpass(g1=0.3, c1=30000, g2=0.3, c2=150000)
+```
 
 ## Contract authors
 e-mail：1439731362@qq.com
