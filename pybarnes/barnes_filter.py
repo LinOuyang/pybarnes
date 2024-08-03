@@ -187,7 +187,7 @@ class BarnesFilter2d:
         meta_data = self.__split_filed(self.data)
         revised_data = np.zeros_like(self.data, dtype=self.dtype)
         yiter = range if ((self.ycoord_epochs == 1) or not print_progress) else trange
-        print("Caculating the first revision...")
+        print("Caculating the first revision...") if print_progress else None
         for i in yiter(self.ycoord_epochs):
             slicey = slice(i * self.ycoord_batch_size, (i + 1) * self.ycoord_batch_size)
             for j in range(self.xcoord_epochs):
@@ -199,7 +199,7 @@ class BarnesFilter2d:
 
         meta = self.__split_filed()
         meta_data = self.__split_filed(self.data - revised_data)
-        print("Caculating the second revision...")
+        print("Caculating the second revision...") if print_progress else None
         for i in yiter(self.ycoord_epochs):
             slicey = slice(i * self.ycoord_batch_size, (i + 1) * self.ycoord_batch_size)
             for j in range(self.xcoord_epochs):
@@ -242,7 +242,7 @@ class BarnesFilter2d:
         meta_data = self.__split_filed(self.data)
         revised_data = np.zeros((2, ) + self.data.shape, dtype=self.dtype)
         yiter = range if ((self.ycoord_epochs == 1) or not print_progress) else trange
-        print("Caculating the first twice revision...")
+        print("Caculating the first twice revision...") if print_progress else None
         for i in yiter(self.ycoord_epochs):
             slicey = slice(i * self.ycoord_batch_size, (i + 1) * self.ycoord_batch_size)
             for j in range(self.xcoord_epochs):
@@ -258,7 +258,7 @@ class BarnesFilter2d:
 
         meta = self.__split_filed()
         meta_data = self.__split_filed(self.data - revised_data)
-        print("Caculating the second twice revision...")
+        print("Caculating the second twice revision...") if print_progress else None
         for i in yiter(self.ycoord_epochs):
             slicey = slice(i * self.ycoord_batch_size, (i + 1) * self.ycoord_batch_size)
             for j in range(self.xcoord_epochs):
@@ -308,7 +308,7 @@ class BarnesFilter1d:
     >>> data = np.stack([u, v], axis=0)
     >>> data.shape
     (2, 3, 61)
-    >>> f = BarnesFilter1d(data, lon, lat, radius_degree=10)
+    >>> f = BarnesFilter1d(lon, lat, data, radius_degree=10)
     >>> band_data = f.bandpass(g1=0.3, c1=30000, g2=0.3, c2=150000)
     >>> lon, lat = f.get_lon_lat()
     >>> np.savez("band_data.npz", **dict(band_data=band_data, lon=lon, lat=lat))
@@ -448,7 +448,7 @@ class BarnesFilter1d:
         meta = self.__split_filed(self.data)
         revised_data = np.zeros_like(self.data, dtype=self.dtype)
         data_iter = range if ((self.epochs == 1) or not print_progress) else trange
-        print("Caculating the first revision...")
+        print("Caculating the first revision...") if print_progress else None
         for i in data_iter(self.epochs):
             sli = slice(i * self.batch_size, (i + 1) * self.batch_size)
             kilometer_distance2, data_part = next(meta)
@@ -457,7 +457,7 @@ class BarnesFilter1d:
             del normed_weights, kilometer_distance2, data_part
 
         meta = self.__split_filed(self.data - revised_data)
-        print("Caculating the second revision...")
+        print("Caculating the second revision...") if print_progress else None
         for i in data_iter(self.epochs):
             sli = slice(i * self.batch_size, (i + 1) * self.batch_size)
             kilometer_distance2, diff = next(meta)
@@ -497,7 +497,7 @@ class BarnesFilter1d:
         meta = self.__split_filed(self.data)
         revised_data = np.zeros((2, ) + self.data.shape, dtype=self.dtype)
         data_iter = range if ((self.epochs == 1) or not print_progress) else trange
-        print("Caculating the first twice revision...")
+        print("Caculating the first twice revision...") if print_progress else None
         for i in data_iter(self.epochs):
             sli = slice(i * self.batch_size, (i + 1) * self.batch_size)
             kilometer_distance2, data_part = next(meta)
@@ -510,7 +510,7 @@ class BarnesFilter1d:
             revised_data[1] = revised_data[0]
 
         meta = self.__split_filed(self.data - revised_data)
-        print("Caculating the second twice revision...")
+        print("Caculating the second twice revision...") if print_progress else None
         for i in data_iter(self.epochs):
             sli = slice(i * self.batch_size, (i + 1) * self.batch_size)
             kilometer_distance2, diff = next(meta)
